@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -9,35 +10,83 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Festival Access</title>
+  <title>Festival Camera Test</title>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    video {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 15px;
+    }
+
+  </style>
 
 </head>
 
 <body>
 
-  <h1>Festival Access Scanner</h1>
+  <h1>Festival Camera Test</h1>
 
-  <p>
-    This is our new scanner website.
+  <video
+    id="camera"
+    autoplay
+    playsinline>
+  </video>
+
+  <p id="result">
+    Starting camera...
   </p>
-
-  <button onclick="testButton()">
-    Test Scanner
-  </button>
-
-  <p id="result"></p>
 
 
   <script>
 
-    function testButton() {
+    async function startCamera() {
 
-      document
-        .getElementById("result")
-        .innerText =
-        "JavaScript is working!";
+      const video =
+        document.getElementById("camera");
+
+      const result =
+        document.getElementById("result");
+
+      try {
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+
+            video: {
+              facingMode: "environment"
+            },
+
+            audio: false
+
+          });
+
+        video.srcObject = stream;
+
+        result.innerText =
+          "Camera is working!";
+
+      }
+
+      catch (error) {
+
+        result.innerText =
+          "Camera error: " +
+          error.message;
+
+      }
 
     }
+
+
+    startCamera();
 
   </script>
 
