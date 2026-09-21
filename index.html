@@ -71,18 +71,15 @@
 
   <script>
 
-    // Your Apps Script backend
     const API_URL =
       "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7CuMkXXp9oJk7WkAnrkNhTR-J5E9xAb6E9dw/exec";
 
 
-    // Prevent multiple scans at the same time
     let processingScan = false;
 
 
     async function onScanSuccess(decodedText) {
 
-      // Ignore new scans while processing
       if (processingScan) {
         return;
       }
@@ -115,7 +112,6 @@
 
           {
             method: "POST",
-
             body: JSON.stringify(data)
           }
 
@@ -133,7 +129,6 @@
             "\n" +
             result.reason;
 
-
       }
 
       catch (error) {
@@ -147,14 +142,16 @@
       }
 
 
-      // Wait before allowing another scan
       setTimeout(
+
         function() {
 
           processingScan = false;
 
         },
+
         2000
+
       );
 
     }
