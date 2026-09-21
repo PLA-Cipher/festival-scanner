@@ -21,15 +21,6 @@
       padding: 25px;
       border-radius: 15px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
-    }
-
-    .container.success-flash {
-      background-color: #d4edda !important;
-    }
-
-    .container.denied-flash {
-      background-color: #f8d7da !important;
     }
 
     #reader {
@@ -44,29 +35,11 @@
       white-space: pre-line;
     }
 
-    input[type="text"], input[type="password"] {
+    input {
       width: 80%;
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    .manual-box {
-      margin: 15px 0;
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-    }
-
-    .manual-box input {
-      width: 65%;
-      margin: 0;
-    }
-
-    .manual-box button {
-      width: 30%;
-      margin: 0;
     }
 
     button {
@@ -74,48 +47,23 @@
       font-size: 16px;
       cursor: pointer;
     }
-
-    .counter-badge {
-      font-size: 16px;
-      color: #333;
-      background: #e9ecef;
-      padding: 8px 15px;
-      border-radius: 20px;
-      display: inline-block;
-      margin-bottom: 15px;
-    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <!-- Login Section -->
     <div id="loginSection">
       <h1>Volunteer Login</h1>
       <input type="text" id="volunteerId" placeholder="Volunteer ID">
-      <br>
       <input type="password" id="volunteerPin" placeholder="PIN">
       <br>
       <button onclick="loginVolunteer()">Login</button>
       <p id="loginResult"></p>
     </div>
 
-    <!-- Scanner Section -->
     <div id="scannerSection" style="display: none;">
       <h1>Festival QR Scanner</h1>
-      
-      <div class="counter-badge">
-        Checked in today: <span id="scanCounter">0</span>
-      </div>
-
-      <p>Point camera at a QR code, or enter code below:</p>
-      
-      <!-- Manual Entry Fallback -->
-      <div class="manual-box">
-        <input type="text" id="manualToken" placeholder="Type token...">
-        <button onclick="submitManualToken()">Submit</button>
-      </div>
-
+      <p>Point the camera at a QR code.</p>
       <div id="reader"></div>
       <p id="result">Starting scanner...</p>
     </div>
@@ -123,9 +71,8 @@
 
   <script>
     let sessionToken = null;
-    const API_URL = "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7Cu00000007WkAnrkNhTR-J5E9xAb6E9dw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7CuMkXXp9oJk7WkAnrkNhTR-J5E9xAb6E9dw/exec";
     let processingScan = false;
-    let successfulScans = 0;
       
     async function loginVolunteer() {
       const volunteerId = document.getElementById("volunteerId").value.trim();
@@ -181,48 +128,19 @@
       );
     }
 
-    // Sound generator using Web Audio API (no external files needed)
-    function playSound(type) {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        
-        if (type === 'success') {
-          osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
-          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
-          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.15);
-        } else {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.25);
-          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.25);
-        }
-      } catch (e) {
-        // Audio policy restrictions ignored
+    async function onScanSuccess(decodedText) {
+      if (processingScan) {
+        return;
       }
-    }
 
-    async function processToken(tokenText) {
-      if (processingScan) return;
       processingScan = true;
-
-      const container = document.querySelector(".container");
-      document.getElementById("result").innerText = "Checking ticket...";
+      document.getElementById("result").innerText = "QR detected.\nChecking ticket...";
 
       try {
         const payload = {
           action: "scan",
           sessionToken: sessionToken,
-          token: tokenText
+          token: decodedText
         };
 
         const response = await fetch(API_URL, {
@@ -231,39 +149,15 @@
         });
 
         const result = await response.json();
-        document.getElementById("result").innerText = result.result + "\n" + result.reason;
 
-        if (result.result === "GRANTED") {
-          successfulScans++;
-          document.getElementById("scanCounter").innerText = successfulScans;
-          playSound('success');
-          container.classList.add("success-flash");
-          setTimeout(() => container.classList.remove("success-flash"), 1000);
-        } else {
-          playSound('denied');
-          container.classList.add("denied-flash");
-          setTimeout(() => container.classList.remove("denied-flash"), 1000);
-        }
+        document.getElementById("result").innerText = result.result + "\n" + result.reason;
       } catch (error) {
         document.getElementById("result").innerText = "Connection error:\n" + error.message;
-        playSound('denied');
       }
 
       setTimeout(function() {
         processingScan = false;
       }, 2000);
-    }
-
-    function onScanSuccess(decodedText) {
-      processToken(decodedText);
-    }
-
-    function submitManualToken() {
-      const input = document.getElementById("manualToken");
-      const token = input.value.trim();
-      if (!token) return;
-      input.value = "";
-      processToken(token);
     }
 
     function onScanFailure(error) {
