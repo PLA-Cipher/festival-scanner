@@ -4,85 +4,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Festival QR Scanner</title>
+  <title>Accra Kizomba Festival 2026 - Gate Scanner</title>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
+    :root {
+      --gold: #facc15;
+      --gold-hover: #eab308;
+      --green: #22c55e;
+      --red: #ef4444;
+      --bg-dark: #09090b;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-align: center;
-      padding: 30px;
-      background: #f5f5f5;
+      padding: 20px;
+      /* Background styled using your flyer.png with a dark overlay for high readability */
+      background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.92)), 
+                  url('flyer.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #f8fafc;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
 
     .container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: background-color 0.3s ease;
+      width: 100%;
+      max-width: 440px;
+      background: rgba(24, 24, 27, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(250, 204, 21, 0.2);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 20px rgba(250, 204, 21, 0.05);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-sizing: border-box;
     }
 
     .container.success-flash {
-      background-color: #d4edda !important;
+      background-color: rgba(6, 95, 70, 0.95) !important;
+      border-color: var(--green);
     }
 
     .container.denied-flash {
-      background-color: #f8d7da !important;
+      background-color: rgba(127, 29, 29, 0.95) !important;
+      border-color: var(--red);
+    }
+
+    .festival-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-top: 0;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .festival-subtitle {
+      font-size: 0.85rem;
+      color: #a1a1aa;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #d4d4d8;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
     }
 
     #reader {
-      width: 100%;
-      margin: 20px auto;
+      width: 100% !important;
+      border: 2px solid rgba(250, 204, 21, 0.3) !important;
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 15px 0;
+      background: #000;
     }
 
     #result {
-      font-size: 20px;
-      font-weight: bold;
-      margin-top: 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 15px;
       white-space: pre-line;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     input[type="text"], input[type="password"] {
-      width: 80%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 16px;
+      width: 100%;
+      padding: 14px 16px;
+      margin: 8px 0 16px 0;
+      font-size: 1rem;
+      background: #09090b;
+      border: 1px solid #3f3f46;
+      color: #fff;
+      border-radius: 12px;
       box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--gold);
     }
 
     .manual-box {
       margin: 15px 0;
       display: flex;
-      gap: 5px;
-      justify-content: center;
+      gap: 8px;
     }
 
     .manual-box input {
-      width: 65%;
-      margin: 0;
-    }
-
-    .manual-box button {
-      width: 30%;
       margin: 0;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #09090b;
+      background: var(--gold);
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: var(--gold-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .manual-box button {
+      width: 35%;
+      font-size: 0.85rem;
     }
 
     .counter-badge {
-      font-size: 16px;
-      color: #333;
-      background: #e9ecef;
-      padding: 8px 15px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--green);
+      background: rgba(34, 197, 94, 0.1);
+      padding: 6px 14px;
       border-radius: 20px;
       display: inline-block;
       margin-bottom: 15px;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    #loginResult {
+      color: var(--red);
+      font-size: 0.9rem;
+      margin-top: 10px;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -91,39 +182,41 @@
   <div class="container">
     <!-- Login Section -->
     <div id="loginSection">
-      <h1>Volunteer Login</h1>
-      <input type="text" id="volunteerId" placeholder="Volunteer ID">
-      <br>
-      <input type="password" id="volunteerPin" placeholder="PIN">
-      <br>
-      <button onclick="loginVolunteer()">Login</button>
+      <div class="festival-title">Accra Kizomba 2026</div>
+      <div class="festival-subtitle">Music • Dance • Heritage</div>
+      <p>Volunteer Gate Portal</p>
+      
+      <input type="text" id="volunteerId" placeholder="Volunteer ID (e.g. VOL-003)">
+      <input type="password" id="volunteerPin" placeholder="PIN Code">
+      <button onclick="loginVolunteer()">Sign In to Gate</button>
       <p id="loginResult"></p>
     </div>
 
     <!-- Scanner Section -->
     <div id="scannerSection" style="display: none;">
-      <h1>Festival QR Scanner</h1>
+      <div class="festival-title" style="font-size: 1.3rem;">Gate Scanner</div>
+      <div class="festival-subtitle">Accra, Ghana</div>
       
       <div class="counter-badge">
-        Checked in today: <span id="scanCounter">0</span>
+        Checked In Today: <span id="scanCounter">0</span>
       </div>
 
-      <p>Point camera at a QR code, or enter code below:</p>
+      <p>Point camera at ticket QR code</p>
       
       <!-- Manual Entry Fallback -->
       <div class="manual-box">
         <input type="text" id="manualToken" placeholder="Type token...">
-        <button onclick="submitManualToken()">Submit</button>
+        <button onclick="submitManualToken()">Verify</button>
       </div>
 
       <div id="reader"></div>
-      <p id="result">Starting scanner...</p>
+      <div id="result">Initializing camera...</div>
     </div>
   </div>
 
   <script>
     let sessionToken = null;
-    const API_URL = "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7CuMkXXp9oJk7WkAnrkNhTR-J5E9xAb6E9dw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7Cu00000007WkAnrkNhTR-J5E9xAb6E9dw/exec";
     let processingScan = false;
     let successfulScans = 0;
       
@@ -133,38 +226,34 @@
       const loginResult = document.getElementById("loginResult");
 
       if (!volunteerId || !pin) {
-        loginResult.innerText = "Please enter your Volunteer ID and PIN.";
+        loginResult.innerText = "Please fill in all fields.";
         return;
       }
 
-      loginResult.innerText = "Logging in...";
+      loginResult.innerText = "Authenticating...";
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          body: JSON.stringify({
-            action: "login",
-            volunteerId: volunteerId,
-            pin: pin
-          })
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "login", volunteerId, pin })
         });
 
         const data = await response.json();
 
         if (!data.success) {
-          loginResult.innerText = data.reason || "Login failed.";
+          loginResult.innerText = data.reason || "Authentication failed.";
           return;
         }
 
         sessionToken = data.sessionToken;
-
         document.getElementById("loginSection").style.display = "none";
         document.getElementById("scannerSection").style.display = "block";
-        document.getElementById("result").innerText = "Login successful. Starting scanner...";
+        document.getElementById("result").innerText = "Ready to scan tickets.";
 
         startScanner();
       } catch (error) {
-        loginResult.innerText = "Unable to connect to the server.";
+        loginResult.innerText = "Server connection error.";
         console.error(error);
       }
     }
@@ -173,15 +262,12 @@
       const scanner = new Html5Qrcode("reader");
       scanner.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
+        { fps: 10, qrbox: 220 },
         onScanSuccess,
-        function onScanFailure(error) {
-          // Ignore normal scanning failures
-        }
+        function onScanFailure(error) {}
       );
     }
 
-    // Sound generator using Web Audio API (no external files needed)
     function playSound(type) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -191,7 +277,7 @@
         gain.connect(audioCtx.destination);
         
         if (type === 'success') {
-          osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5 note
+          osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
           osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
           gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
@@ -206,9 +292,7 @@
           osc.start();
           osc.stop(audioCtx.currentTime + 0.25);
         }
-      } catch (e) {
-        // Audio policy restrictions ignored
-      }
+      } catch (e) {}
     }
 
     async function processToken(tokenText) {
@@ -216,22 +300,25 @@
       processingScan = true;
 
       const container = document.querySelector(".container");
-      document.getElementById("result").innerText = "Checking ticket...";
+      document.getElementById("result").innerText = "Validating ticket...";
 
       try {
-        const payload = {
-          action: "scan",
-          sessionToken: sessionToken,
-          token: tokenText
-        };
-
+        const payload = { action: "scan", sessionToken, token: tokenText };
         const response = await fetch(API_URL, {
           method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
 
         const result = await response.json();
-        document.getElementById("result").innerText = result.result + "\n" + result.reason;
+
+        if (result.reason === "Session expired or invalid") {
+          alert("Session expired. Please log in again.");
+          location.reload();
+          return;
+        }
+
+        document.getElementById("result").innerText = `${result.result}\n${result.reason}`;
 
         if (result.result === "GRANTED") {
           successfulScans++;
@@ -245,13 +332,11 @@
           setTimeout(() => container.classList.remove("denied-flash"), 1000);
         }
       } catch (error) {
-        document.getElementById("result").innerText = "Connection error:\n" + error.message;
+        document.getElementById("result").innerText = "Network error:\n" + error.message;
         playSound('denied');
       }
 
-      setTimeout(function() {
-        processingScan = false;
-      }, 2000);
+      setTimeout(() => { processingScan = false; }, 2000);
     }
 
     function onScanSuccess(decodedText) {
@@ -266,9 +351,7 @@
       processToken(token);
     }
 
-    function onScanFailure(error) {
-      // Normal scanning failures are ignored.
-    }
+    function onScanFailure(error) {}
   </script>
 </body>
 </html>
