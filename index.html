@@ -54,17 +54,45 @@
 
   <div class="container">
 
-    <h1>Festival QR Scanner</h1>
+    <div id="loginSection">
 
-    <p>
-      Point the camera at a QR code.
-    </p>
+      <h1>Volunteer Login</h1>
 
-    <div id="reader"></div>
+      <input
+        type="text"
+        id="volunteerId"
+        placeholder="Volunteer ID"
+      >
 
-    <p id="result">
-      Starting scanner...
-    </p>
+      <input
+        type="password"
+        id="volunteerPin"
+        placeholder="PIN"
+      >
+
+      <button onclick="loginVolunteer()">
+        Login
+      </button>
+
+      <p id="loginResult"></p>
+
+    </div>
+
+    <div id="scannerSection" style="display: none;">
+
+      <h1>Festival QR Scanner</h1>
+
+      <p>
+        Point the camera at a QR code.
+      </p>
+
+      <div id="reader"></div>
+
+      <p id="result">
+        Starting scanner...
+      </p>
+
+    </div>
 
   </div>
 
@@ -77,6 +105,76 @@
 
 
     let processingScan = false;
+    async function loginVolunteer() {
+
+  const volunteerId =
+    document.getElementById("volunteerId").value.trim();
+
+  const pin =
+    document.getElementById("volunteerPin").value.trim();
+
+  const loginResult =
+    document.getElementById("loginResult");
+
+  if (!volunteerId || !pin) {
+
+    loginResult.innerText =
+      "Please enter your Volunteer ID and PIN.";
+
+    return;
+  }
+
+  loginResult.innerText =
+    "Logging in...";
+
+  try {
+
+    const response = await fetch(
+      API_URL,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          action: "login",
+          volunteerId: volunteerId,
+          pin: pin
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+
+      loginResult.innerText =
+        data.reason || "Login failed.";
+
+      return;
+    }
+
+    sessionToken = data.sessionToken;
+
+    document.getElementById("loginSection")
+      .style.display = "none";
+
+    document.getElementById("scannerSection")
+      .style.display = "block";
+
+    document.getElementById("result")
+      .innerText =
+        "Login successful. Starting scanner...";
+
+    startScanner();
+
+  } catch (error) {
+
+    loginResult.innerText =
+      "Unable to connect to the server.";
+
+    console.error(error);
+
+  }
+
+}
 
 
     async function onScanSuccess(decodedText) {
