@@ -19,7 +19,6 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       text-align: center;
       padding: 20px;
-      /* Background styled using your flyer.png with a dark overlay for high readability */
       background: linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.92)), 
                   url('flyer.png') no-repeat center center fixed;
       background-size: cover;
@@ -157,6 +156,22 @@
       font-size: 0.85rem;
     }
 
+    .event-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
     .counter-badge {
       font-size: 0.85rem;
       font-weight: 700;
@@ -192,16 +207,34 @@
       <p id="loginResult"></p>
     </div>
 
+    <!-- Event Selection Section (New) -->
+    <div id="eventSelectionSection" style="display: none;">
+      <div class="festival-title" style="font-size: 1.3rem;">Select Active Gate</div>
+      <div class="festival-subtitle">Choose Current Station</div>
+      <p>Pick the event/gate you are scanning for right now:</p>
+      
+      <div class="event-buttons">
+        <button onclick="selectEvent('FULL')">Main Gate / Full Pass</button>
+        <button onclick="selectEvent('SOCIAL')">Evening Social Party</button>
+        <button onclick="selectEvent('VIP')">VIP Lounge</button>
+        <button onclick="selectEvent('WORKSHOP')">Day Workshops</button>
+      </div>
+    </div>
+
     <!-- Scanner Section -->
     <div id="scannerSection" style="display: none;">
-      <div class="festival-title" style="font-size: 1.3rem;">Gate Scanner</div>
-      <div class="festival-subtitle">Accra, Ghana</div>
+      <div class="header-bar">
+        <span id="currentGateLabel" style="font-weight: 700; color: var(--gold); font-size: 0.85rem; text-transform: uppercase;">Gate: None</span>
+        <button onclick="showEventSelection()" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin: 0;">Switch Event</button>
+      </div>
+
+      <div class="festival-title" style="font-size: 1.2rem;">Gate Scanner</div>
       
       <div class="counter-badge">
         Checked In Today: <span id="scanCounter">0</span>
       </div>
 
-      <p>Point camera at ticket QR code</p>
+      <p style="margin-bottom: 10px;">Point camera at ticket QR code</p>
       
       <!-- Manual Entry Fallback -->
       <div class="manual-box">
@@ -210,12 +243,13 @@
       </div>
 
       <div id="reader"></div>
-      <div id="result">Initializing camera...</div>
+      <div id="result">Ready to scan tickets.</div>
     </div>
   </div>
 
   <script>
     let sessionToken = null;
+    let activeScanner = null;
     const API_URL = "https://script.google.com/macros/s/AKfycbywtvZNlTp0li50wfXuPzWvfPpvMCT5Qh7CuMkXXp9oJk7WkAnrkNhTR-J5E9xAb6E9dw/exec";
     let processingScan = false;
     let successfulScans = 0;
@@ -248,24 +282,60 @@
 
         sessionToken = data.sessionToken;
         document.getElementById("loginSection").style.display = "none";
-        document.getElementById("scannerSection").style.display = "block";
-        document.getElementById("result").innerText = "Ready to scan tickets.";
-
-        startScanner();
+        // Transition to Event Selection instead of directly opening scanner
+        document.getElementById("eventSelectionSection").style.display = "block";
       } catch (error) {
         loginResult.innerText = "Server connection error.";
         console.error(error);
       }
     }
+
+    async function selectEvent(activityId) {
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "setActivity", sessionToken, activityId })
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          alert("Error setting event: " + data.reason);
+          return;
+        }
+
+        document.getElementById("eventSelectionSection").style.display = "none";
+        document.getElementById("scannerSection").style.display = "block";
+        document.getElementById("currentGateLabel").innerText = "Gate: " + activityId;
+        document.getElementById("result").innerText = "Ready to scan tickets.";
+
+        startScanner();
+      } catch (error) {
+        alert("Server connection error while setting event.");
+      }
+    }
+
+    function showEventSelection() {
+      if (activeScanner) {
+        activeScanner.stop().catch(err => console.log(err));
+        activeScanner = null;
+      }
+      document.getElementById("scannerSection").style.display = "none";
+      document.getElementById("eventSelectionSection").style.display = "block";
+    }
       
     function startScanner() {
-      const scanner = new Html5Qrcode("reader");
-      scanner.start(
+      if (activeScanner) return;
+      activeScanner = new Html5Qrcode("reader");
+      activeScanner.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 220 },
         onScanSuccess,
         function onScanFailure(error) {}
-      );
+      ).catch(err => {
+        console.log("Camera init note:", err);
+      });
     }
 
     function playSound(type) {
