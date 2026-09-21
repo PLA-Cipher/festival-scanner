@@ -93,30 +93,19 @@
           "QR detected.\nChecking ticket...";
 
 
-      const data = {
+const data = {
+  action: "scan",
+  sessionToken: sessionToken,
+  token: decodedText
+};
 
-        volunteerId: "VOL-003",
-
-        pin: "9012",
-
-        token: decodedText
-
-      };
-
-
-      try {
-
-        const response = await fetch(
-
-          API_URL,
-
-          {
-            method: "POST",
-            body: JSON.stringify(data)
-          }
-
-        );
-
+const response = await fetch(
+  API_URL,
+  {
+    method: "POST",
+    body: JSON.stringify(data)
+  }
+);
 
         const result =
           await response.json();
