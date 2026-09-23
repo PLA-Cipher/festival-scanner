@@ -331,18 +331,38 @@
       document.getElementById("eventSelectionSection").style.display = "block";
     }
       
-    function startScanner() {
-      if (activeScanner) return;
-      activeScanner = new Html5Qrcode("reader");
-      activeScanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 220 },
-        onScanSuccess,
-        function onScanFailure(error) {}
-      ).catch(err => {
-        console.log("Camera init note:", err);
-      });
+  function startScanner() {
+  if (activeScanner) return;
+
+  activeScanner = new Html5Qrcode("reader");
+
+  activeScanner.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      aspectRatio: 1.0
+    },
+    onScanSuccess,
+    function onScanFailure(error) {}
+  ).then(() => {
+    console.log("Scanner started successfully");
+
+    const video = document.querySelector("#reader video");
+
+    if (video) {
+      video.style.width = "100%";
+      video.style.height = "300px";
+      video.style.display = "block";
+      video.style.objectFit = "cover";
+      console.log("Video element found:", video);
+    } else {
+      console.log("NO VIDEO ELEMENT FOUND");
     }
+  }).catch(err => {
+    console.error("Camera start error:", err);
+  });
+}
 
     function playSound(type) {
       try {
