@@ -202,7 +202,7 @@
 </head>
 
 <body>
-  <div class="container">
+<div class="container">
     <!-- Login Section -->
     <div id="loginSection">
       <div class="festival-title">Accra Kizomba 2026</div>
@@ -221,12 +221,12 @@
       <div class="festival-subtitle">Choose Current Station</div>
       <p>Pick the event/gate you are scanning for right now:</p>
       
-     <div class="event-buttons">
-       <button onclick="selectEvent('FULL')">FULL EXPERIENCE</button>
-       <button onclick="selectEvent('CORE')">CORE FESTIVAL</button>
-       <button onclick="selectEvent('SOCIAL')">EVENING SOCIAL ONLY</button>
-     </div>
-    </div> <!-- ADD THIS MISSING CLOSING TAG -->
+      <div class="event-buttons">
+        <button onclick="selectEvent('FULL')">FULL EXPERIENCE</button>
+        <button onclick="selectEvent('CORE')">CORE FESTIVAL</button>
+        <button onclick="selectEvent('SOCIAL')">EVENING SOCIAL ONLY</button>
+      </div>
+    </div> <!-- THIS CLOSING TAG FIXES THE EMPTY BOX -->
 
     <!-- Scanner Section -->
     <div id="scannerSection" style="display: none;">
@@ -234,7 +234,6 @@
         <span id="currentGateLabel" style="font-weight: 700; color: var(--gold); font-size: 0.85rem; text-transform: uppercase;">Gate: None</span>
         <button onclick="showEventSelection()" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin: 0;">Switch Event</button>
       </div>
-
       <div class="festival-title" style="font-size: 1.2rem;">Gate Scanner</div>
       
       <div class="counter-badge">
