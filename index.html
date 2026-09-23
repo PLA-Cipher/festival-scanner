@@ -316,8 +316,10 @@
         document.getElementById("currentGateLabel").innerText = "Gate: " + activityId;
         document.getElementById("result").innerText = "Ready to scan tickets.";
 
-        startScanner();
-      } catch (error) {
+       setTimeout(() => {
+         startScanner();
+       }, 300);
+        catch (error) {
         alert("Server connection error while setting event.");
       }
     }
