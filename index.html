@@ -159,6 +159,31 @@
       transform: scale(0.98);
     }
 
+    /* Custom Gate Button Colors */
+    .btn-red {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-red:hover {
+      background: #dc2626; 
+    }
+
+    .btn-yellow {
+      background: var(--gold);
+      color: #09090b;
+    }
+    .btn-yellow:hover {
+      background: var(--gold-hover);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-green:hover {
+      background: #16a34a; 
+    }
+
     .manual-box button {
       width: 35%;
       font-size: 0.85rem;
@@ -222,9 +247,9 @@
       <p>Pick the event/gate you are scanning for right now:</p>
       
       <div class="event-buttons">
-        <button onclick="selectEvent('FULL')">FULL EXPERIENCE</button>
-        <button onclick="selectEvent('CORE')">CORE FESTIVAL</button>
-        <button onclick="selectEvent('SOCIAL')">EVENING SOCIAL ONLY</button>
+        <button class="btn-red" onclick="selectEvent('FULL')">FULL EXPERIENCE</button>
+        <button class="btn-yellow" onclick="selectEvent('CORE')">CORE FESTIVAL</button>
+        <button class="btn-green" onclick="selectEvent('SOCIAL')">EVENING SOCIAL ONLY</button>
       </div>
     </div> <!-- THIS CLOSING TAG FIXES THE EMPTY BOX -->
 
@@ -316,9 +341,9 @@
         document.getElementById("currentGateLabel").innerText = "Gate: " + activityId;
         document.getElementById("result").innerText = "Ready to scan tickets.";
 
-       setTimeout(() => {
-         startScanner();
-       }, 300);
+        setTimeout(() => {
+          startScanner();
+        }, 300);
       } catch (error) {
         alert("Server connection error while setting event.");
       }
